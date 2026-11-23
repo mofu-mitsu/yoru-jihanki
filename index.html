@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>よるの自販機</title>
+  <meta name="description" content="深夜の自販機。ボタンを押すと、今夜の気分が缶になって落ちてくる。" />
+  <meta name="theme-color" content="#12141a" />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Shippori+Mincho:wght@500;700&family=Zen+Kaku+Gothic+New:wght@400;500;700&display=swap" />
+  <style>
+    :root {
+      --bg: #12141a;
+      --surface: #1c1f27;
+      --fg: #f2efe6;
+      --muted: #9a9aa3;
+      --accent: #e6a15c;
+      --ink: #3a2412;
+      --slot: #0c0d11;
+      --sans: "Zen Kaku Gothic New", sans-serif;
+      --display: "Shippori Mincho", serif;
+    }
+    * { box-sizing: border-box; }
+    html, body { margin: 0; background: var(--bg); color: var(--fg); }
+    body {
+      font-family: var(--sans);
+      line-height: 1.5;
+      min-height: 100dvh;
+    }
+    button { font: inherit; color: inherit; cursor: pointer; }
+    button:disabled { cursor: default; opacity: 0.5; }
+    main { max-width: 28rem; margin: 0 auto; padding: 1.5rem 1rem 4rem; }
+    .kicker { margin: 0; font-size: 0.75rem; letter-spacing: 0.14em; color: var(--muted); }
+    h1 { margin: 0; font-family: var(--display); font-size: 1.875rem; font-weight: 500; line-height: 1.2; }
+    .top { display: flex; justify-content: space-between; align-items: flex-end; gap: 0.75rem; }
+    .clock { margin: 0; padding-bottom: 0.25rem; font-size: 0.875rem; color: var(--accent); }
+    .clock span + span { margin-left: 0.5rem; color: var(--muted); }
+    .lead { margin: 0.5rem 0 0; font-size: 0.875rem; color: var(--muted); }
+    .machine { margin-top: 1.25rem; background: var(--surface); border-radius: 1rem; padding: 1rem; }
+    .lamp { height: 0.375rem; border-radius: 999px; background: var(--accent); margin-bottom: 1rem; }
+    .display {
+      min-height: 3rem;
+      margin: 0;
+      padding: 0.75rem 1rem;
+      border-radius: 0.75rem;
+      background: var(--slot);
+      color: var(--accent);
+      font-family: var(--display);
+      font-size: 1.125rem;
+      line-height: 1.35;
+    }
+    .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; margin-top: 1rem; }
+    .mood {
+      min-height: 4rem;
+      text-align: left;
+      background: var(--slot);
+      border: 1px solid color-mix(in oklab, var(--muted) 40%, transparent);
+      border-radius: 0.75rem;
+      padding: 0.5rem 0.75rem;
+    }
+    .mood:not(:disabled):hover { border-color: var(--accent); }
+    .mood:not(:disabled):active { background: var(--accent); color: var(--ink); }
+    .mood:not(:disabled):active small { color: var(--ink); }
+    .mood b { display: block; font-family: var(--display); font-size: 1.25rem; font-weight: 500; }
+    .mood small { display: block; color: var(--muted); font-size: 0.75rem; }
+    .slot { min-height: 10rem; margin-top: 1rem; padding: 1rem; border-radius: 0.75rem; background: var(--slot); }
+    .slot .label, .pocket-head, .hint { font-size: 0.75rem; color: var(--muted); }
+    .slot .label { letter-spacing: 0.14em; margin: 0; }
+    .empty { margin: 1.5rem 0 0; font-size: 0.875rem; color: var(--muted); }
+    .can h2 { margin: 0; font-family: var(--display); font-size: 1.5rem; font-weight: 500; line-height: 1.35; }
+    .can .kind, .can p { margin: 0.25rem 0 0; }
+    .can .kind { color: var(--accent); font-size: 0.75rem; }
+    .effect { color: var(--muted); font-size: 0.875rem; }
+    .primary, .shake {
+      width: 100%;
+      min-height: 3rem;
+      margin-top: 1rem;
+      border: 0;
+      border-radius: 0.75rem;
+      background: var(--accent);
+      color: var(--ink);
+      font-family: var(--display);
+      font-size: 1.15rem;
+    }
+    .ghost {
+      width: 100%;
+      min-height: 3rem;
+      margin-top: 1rem;
+      border-radius: 0.75rem;
+      border: 1px solid color-mix(in oklab, var(--muted) 40%, transparent);
+      background: transparent;
+    }
+    .warn { margin: 0.5rem 0 0; text-align: center; font-size: 0.75rem; color: var(--muted); }
+    .pocket { margin-top: 1.5rem; }
+    .pocket-head { display: flex; justify-content: space-between; align-items: center; }
+    .pocket-head h2 { margin: 0; font-family: var(--display); font-size: 1.125rem; font-weight: 500; color: var(--fg); }
+    .texty { min-height: 2.75rem; border: 0; background: transparent; color: var(--muted); font-size: 0.875rem; }
+    .row { display: flex; gap: 0.5rem; overflow-x: auto; margin: 0.75rem 0 0; padding: 0 0 0.5rem; list-style: none; }
+    .row button {
+      width: 9rem;
+      min-height: 3.5rem;
+      flex: 0 0 auto;
+      text-align: left;
+      background: var(--surface);
+      border: 1px solid color-mix(in oklab, var(--muted) 40%, transparent);
+      border-radius: 0.75rem;
+      padding: 0.5rem 0.75rem;
+    }
+    .row b { display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-family: var(--display); font-size: 0.875rem; font-weight: 500; }
+    .row small { color: var(--accent); }
+    .can-in { animation: drop-can 0.45s cubic-bezier(0.2, 0.8, 0.2, 1); }
+    .shake-body { animation: machine-shake 0.12s linear 3; }
+    @keyframes drop-can { from { transform: translateY(-36%); opacity: 0; } to { transform: none; opacity: 1; } }
+    @keyframes machine-shake {
+      0%, 100% { transform: translateX(0); }
+      25% { transform: translateX(-5px); }
+      75% { transform: translateX(5px); }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .can-in, .shake-body { animation: none; }
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <header class="top">
+      <div>
+        <p class="kicker">まだ、起きてる</p>
+        <h1>よるの自販機</h1>
+      </div>
+      <p class="clock"><span id="clock">--:--</span><span>営業中</span></p>
+    </header>
+    <p class="lead">売ってるのは飲み物じゃない。今夜の気分が、缶になって落ちる。</p>
+    <section class="machine" id="machine" aria-label="自販機">
+      <div class="lamp" aria-hidden="true"></div>
+      <p class="display" id="line" aria-live="polite">ボタンを押すと、缶が落ちます。</p>
+      <div class="grid" id="moods"></div>
+      <div class="slot" id="slot"></div>
+    </section>
+    <section class="pocket" aria-label="ポケット">
+      <div class="pocket-head">
+        <h2 id="count">ポケット　0</h2>
+        <button type="button" class="texty" id="clear" hidden>空にする</button>
+      </div>
+      <p class="empty" id="empty">まだ、何も落ちてない。</p>
+      <ul class="row" id="row"></ul>
+    </section>
+  </main>
+  <script>
+    const MOODS = [
+      ["sweet", "あまい", "まだ街にいる"],
+      ["bitter", "にがい", "あと味が残る"],
+      ["hot", "からい", "目が覚める"],
+      ["quiet", "しずか", "音を消す"],
+    ];
+    const CANS = [
+      ["s1","sweet","終電あとのメロンソーダ","甘さより、まだ街にいる感じ。","知らない曲を口ずさむ"],
+      ["s2","sweet","灯りの牛乳","白くて、少しさびしい。","ただいま、と言いたくなる"],
+      ["s3","sweet","三口目のココア","最初はただ熱い。","眠くならない"],
+      ["s4","sweet","入れすぎのガムシロップ","友達の家の味。","やさしくなる"],
+      ["s5","sweet","溶けたアイスキャンデー","棒の近くが一番甘い。","季節を間違える"],
+      ["s6","sweet","出してない手紙","紙の甘い匂い。","下書きが増える"],
+      ["b1","bitter","氷だけ親切なブラック","苦い。氷が先に終わる。","正直になる"],
+      ["b2","bitter","既読のままの夜","炭酸はない。","文章が短くなる"],
+      ["b3","bitter","やや冷たい緑茶","苦みは葉のせい。","肩がおりる"],
+      ["b4","bitter","言いかけの本音","後味が長い。","明日の自分が困る"],
+      ["b5","bitter","ベンチの缶コーヒー","自動の苦さ。","終電を一本見送る"],
+      ["b6","bitter","残量12%の味","急いでいる苦さ。","画面を暗くしたくなる"],
+      ["h1","hot","二倍の七味","舌が先に起きている。","言いたいことが先に出る"],
+      ["h2","hot","蓋を閉め忘れた夜","辛さと、少しの後悔。","水を探す"],
+      ["h3","hot","断れない誘い","赤い。","靴を履いてしまう"],
+      ["h4","hot","一口で泣くラー油","泣きは辛さのせい。","目が覚める"],
+      ["h5","hot","熱いままのアスファルト","缶なのに地面の味。","歩く速度が上がる"],
+      ["h6","hot","甘い顔のラムネ","勝負をしかけてくる。","もう一回押す"],
+      ["q1","quiet","消灯後の水","音がしない。","呼吸が深くなる"],
+      ["q2","quiet","誰もいない青信号","味より温度。","立ち止まる"],
+      ["q3","quiet","ミュートの通知","透明。","画面を裏返す"],
+      ["q4","quiet","雨の図書館の出口","静かな湿り気。","傘をゆっくり開く"],
+      ["q5","quiet","言わなくてよかった一言","ほぼ無味。","そのままでいい"],
+      ["q6","quiet","枕もとの無音","薄い。","目を閉じる"],
+      ["x1","secret","つり銭の代わりの星","光ってない。持つと少し光る。","上を向く"],
+      ["x2","secret","ラベルのない缶","味は、今日避けたもの。","覚えていないふり"],
+      ["x3","secret","営業終了の五分前","機械が親切な時間。","もう一杯、と言う"],
+      ["x4","secret","宛名のない手紙","返却口に最初からあった。","自分の名前を書きたくなる"],
+    ].map(([id, mood, name, line, effect]) => ({ id, mood, name, line, effect }));
+    const KEY = "yoru-jihanki-pocket";
+    const moodName = Object.fromEntries(MOODS);
+    let phase = "idle";
+    let current = null;
+    let pocket = [];
+    let busy = false;
+    let confirmClear = false;
+    const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+    function byId(id) { return CANS.find((can) => can.id === id); }
+    function pick(mood, recent) {
+      const poolAll = CANS.filter((can) => can.mood === mood);
+      const fresh = poolAll.filter((can) => !recent.includes(can.id));
+      const pool = fresh.length ? fresh : poolAll;
+      return pool[Math.floor(Math.random() * pool.length)];
+    }
+    function tone(freq, dur, type) {
+      const Ctx = window.AudioContext || window.webkitAudioContext;
+      if (!Ctx) return;
+      const ctx = new Ctx();
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.type = type;
+      osc.frequency.value = freq;
+      gain.gain.setValueAtTime(0.04, ctx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + dur);
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      osc.start();
+      osc.stop(ctx.currentTime + dur);
+      osc.onended = () => ctx.close();
+    }
+    function sleep(ms) { return new Promise((r) => setTimeout(r, reduce ? 0 : ms)); }
+    function save() { localStorage.setItem(KEY, JSON.stringify(pocket)); }
+
+    function render() {
+      document.getElementById("line").textContent =
+        phase === "vend" ? "……がらん、がらん。" :
+        phase === "jam" ? "つかえた。ゆすって。" :
+        phase === "shaking" ? "……カラカラ。" :
+        phase === "out" && current ? current.name :
+        phase === "kept" ? "ポケットに入れた。" :
+        "ボタンを押すと、缶が落ちます。";
+      document.getElementById("machine").classList.toggle("shake-body", phase === "shaking");
+      const slot = document.getElementById("slot");
+      const locked = phase === "vend" || phase === "jam" || phase === "shaking";
+      document.querySelectorAll(".mood").forEach((btn) => { btn.disabled = locked; });
+      if (phase === "jam") {
+        slot.innerHTML = '<p class="label">取り出し口</p><button type="button" class="shake" id="shake">ゆする</button>';
+        document.getElementById("shake").onclick = () => void doShake();
+      } else if (phase === "out" && current) {
+        const held = pocket.includes(current.id);
+        const kind = current.mood === "secret" ? "売ってない" : moodName[current.mood];
+        slot.innerHTML =
+          '<p class="label">取り出し口</p>' +
+          '<article class="can can-in">' +
+          '<p class="kind"></p><h2></h2><p class="blurb"></p><p class="effect"></p>' +
+          (held
+            ? '<button type="button" class="ghost" id="act">閉じる</button>'
+            : '<button type="button" class="primary" id="act">ポケットへ</button><p class="warn">取らないと、次の缶で戻ってしまう。</p>') +
+          "</article>";
+        slot.querySelector(".kind").textContent = kind;
+        slot.querySelector("h2").textContent = current.name;
+        slot.querySelector(".blurb").textContent = current.line;
+        slot.querySelector(".effect").textContent = "副作用　" + current.effect;
+        document.getElementById("act").onclick = held ? () => { phase = "idle"; current = null; render(); } : take;
+      } else {
+        slot.innerHTML = '<p class="label">取り出し口</p><p class="empty">からっぽ。上のボタンで一缶。</p>';
+      }
+      document.getElementById("count").textContent = "ポケット　" + pocket.length;
+      const clear = document.getElementById("clear");
+      clear.hidden = pocket.length === 0;
+      clear.textContent = confirmClear ? "ほんとうに空にする" : "空にする";
+      document.getElementById("empty").hidden = pocket.length > 0;
+      const row = document.getElementById("row");
+      row.innerHTML = "";
+      pocket.forEach((id) => {
+        const can = byId(id);
+        if (!can) return;
+        const li = document.createElement("li");
+        const btn = document.createElement("button");
+        btn.type = "button";
+        const name = document.createElement("b");
+        name.textContent = can.name;
+        const tag = document.createElement("small");
+        tag.textContent = can.mood === "secret" ? "ひみつ" : "もらった缶";
+        btn.append(name, tag);
+        btn.onclick = () => { if (busy) return; current = can; phase = "out"; confirmClear = false; render(); };
+        li.append(btn);
+        row.append(li);
+      });
+    }
+
+    async function vend(mood) {
+      if (busy) return;
+      busy = true;
+      confirmClear = false;
+      phase = "vend";
+      current = null;
+      render();
+      tone(880, 0.08, "square");
+      await sleep(720);
+      if (Math.random() < 0.14) {
+        phase = "jam";
+        busy = false;
+        render();
+        return;
+      }
+      current = pick(mood, pocket);
+      phase = "out";
+      tone(180, 0.18, "triangle");
+      busy = false;
+      render();
+    }
+    async function doShake() {
+      if (busy || phase !== "jam") return;
+      busy = true;
+      phase = "shaking";
+      render();
+      tone(140, 0.12, "sawtooth");
+      await sleep(420);
+      current = pick("secret", pocket);
+      phase = "out";
+      tone(520, 0.14, "triangle");
+      busy = false;
+      render();
+    }
+    function take() {
+      if (!current) return;
+      pocket = [current.id, ...pocket.filter((id) => id !== current.id)];
+      save();
+      current = null;
+      phase = "kept";
+      render();
+    }
+    document.getElementById("clear").onclick = () => {
+      if (!confirmClear) { confirmClear = true; render(); return; }
+      const held = current && pocket.includes(current.id);
+      pocket = [];
+      confirmClear = false;
+      save();
+      if (held) { current = null; phase = "idle"; }
+      render();
+    };
+    const moods = document.getElementById("moods");
+    MOODS.forEach(([id, label, hint]) => {
+      const btn = document.createElement("button");
+      btn.type = "button";
+      btn.className = "mood";
+      const name = document.createElement("b");
+      name.textContent = label;
+      const sub = document.createElement("small");
+      sub.textContent = hint;
+      btn.append(name, sub);
+      btn.onclick = () => void vend(id);
+      moods.append(btn);
+    });
+    try {
+      const raw = JSON.parse(localStorage.getItem(KEY) || "[]");
+      if (Array.isArray(raw)) pocket = raw.filter((id) => typeof id === "string" && byId(id));
+    } catch (_) {}
+    function tick() {
+      document.getElementById("clock").textContent = new Intl.DateTimeFormat("ja-JP", {
+        hour: "2-digit", minute: "2-digit", hourCycle: "h23", timeZone: "Asia/Tokyo",
+      }).format(new Date());
+    }
+    tick();
+    setInterval(tick, 10000);
+    render();
+  </script>
+</body>
+</html>

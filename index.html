@@ -3,8 +3,29 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>よるの自販機</title>
-  <meta name="description" content="深夜の自販機。ボタンを押すと、今夜の気分が缶になって落ちてくる。" />
+  <title>よるの自販機｜もふみつ工房</title>
+  <meta name="description" content="深夜の自販機。ボタンを押すと、今夜の気分が缶やペットボトルになって落ちてくる。" />
+  <link rel="canonical" href="https://mofu-mitsu.github.io/yoru-jihanki/" />
+  <meta property="og:title" content="よるの自販機｜もふみつ工房" />
+  <meta property="og:description" content="深夜の自販機。ボタンを押すと、今夜の気分が缶やペットボトルになって落ちてくる。" />
+  <meta property="og:image" content="https://mofu-mitsu.github.io/yoru-jihanki/ogp.jpg" />
+  <meta property="og:url" content="https://mofu-mitsu.github.io/yoru-jihanki/" />
+  <meta property="og:type" content="website" />
+  <meta property="og:locale" content="ja_JP" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="よるの自販機｜もふみつ工房" />
+  <meta name="twitter:description" content="深夜の自販機。ボタンを押すと、今夜の気分が缶やペットボトルになって落ちてくる。" />
+  <meta name="twitter:image" content="https://mofu-mitsu.github.io/yoru-jihanki/ogp.jpg" />
+  <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        { "@type": "ListItem", "position": 1, "name": "ホーム", "item": "https://mofu-mitsu.github.io/index.html" },
+        { "@type": "ListItem", "position": 2, "name": "よるの自販機", "item": "https://mofu-mitsu.github.io/yoru-jihanki/" }
+      ]
+    }
+  </script>
   <meta name="theme-color" content="#12141a" />
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Shippori+Mincho:wght@500;700&family=Zen+Kaku+Gothic+New:wght@400;500;700&display=swap" />
   <style>
@@ -107,7 +128,18 @@
     }
     .row b { display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-family: var(--display); font-size: 0.875rem; font-weight: 500; }
     .row small { color: var(--accent); }
-    .can-in { animation: drop-can 0.45s cubic-bezier(0.2, 0.8, 0.2, 1); }
+    .crumb { margin: 0 0 1rem; padding: 0; list-style: none; display: flex; flex-wrap: wrap; gap: 0.5rem; align-items: center; font-size: 0.875rem; color: var(--muted); }
+    .crumb a { color: var(--accent); }
+    .crumb [aria-current="page"] { color: var(--fg); }
+    .glass { position: relative; height: 9rem; margin-top: 1rem; overflow: hidden; border-radius: 0.75rem; background: var(--slot); }
+    .sheen { position: absolute; inset: 0; background: linear-gradient(115deg, color-mix(in oklab, var(--fg) 16%, transparent), transparent 42%); pointer-events: none; }
+    .shelf, .drop { height: 100%; display: flex; align-items: flex-end; justify-content: center; gap: 0.6rem; padding: 0 1rem 0.4rem; }
+    .shelf svg { opacity: 0.4; }
+    .product { display: flex; gap: 0.75rem; margin-top: 0.75rem; }
+    .product h2 { margin: 0; font-family: var(--display); font-size: 1.25rem; font-weight: 500; line-height: 1.35; }
+    .falling { animation: fall-out 0.75s cubic-bezier(0.4, 0, 0.8, 0.4) forwards; }
+    .stuck { transform: translateY(10px) rotate(-8deg); }
+    @keyframes fall-out { from { transform: translateY(-12%); } to { transform: translateY(78%); opacity: 0.15; } }
     .shake-body { animation: machine-shake 0.12s linear 3; }
     @keyframes drop-can { from { transform: translateY(-36%); opacity: 0; } to { transform: none; opacity: 1; } }
     @keyframes machine-shake {
@@ -116,12 +148,20 @@
       75% { transform: translateX(5px); }
     }
     @media (prefers-reduced-motion: reduce) {
-      .can-in, .shake-body { animation: none; }
+      .can-in, .falling, .shake-body { animation: none; }
+      .stuck { transform: none; }
     }
   </style>
 </head>
 <body>
   <main>
+    <nav aria-label="パンくずリスト">
+      <ol class="crumb">
+        <li><a href="https://mofu-mitsu.github.io/index.html">ホーム</a></li>
+        <li aria-hidden="true">＞</li>
+        <li aria-current="page">よるの自販機</li>
+      </ol>
+    </nav>
     <header class="top">
       <div>
         <p class="kicker">まだ、起きてる</p>
@@ -129,10 +169,11 @@
       </div>
       <p class="clock"><span id="clock">--:--</span><span>営業中</span></p>
     </header>
-    <p class="lead">売ってるのは飲み物じゃない。今夜の気分が、缶になって落ちる。</p>
+    <p class="lead">売ってるのは飲み物じゃない。今夜の気分が、缶やペットボトルになって落ちる。</p>
     <section class="machine" id="machine" aria-label="自販機">
       <div class="lamp" aria-hidden="true"></div>
-      <p class="display" id="line" aria-live="polite">ボタンを押すと、缶が落ちます。</p>
+      <p class="display" id="line" aria-live="polite">ボタンを押すと、缶かボトルが落ちます。</p>
+      <div class="glass" id="glass"></div>
       <div class="grid" id="moods"></div>
       <div class="slot" id="slot"></div>
     </section>
@@ -217,15 +258,33 @@
     function sleep(ms) { return new Promise((r) => setTimeout(r, reduce ? 0 : ms)); }
     function save() { localStorage.setItem(KEY, JSON.stringify(pocket)); }
 
+    const BOTTLES = new Set(["s2", "s3", "s4", "s5", "b3", "h1", "h4", "h6", "q1", "q2", "q4", "q5", "x3"]);
+    function vesselOf(can) { return BOTTLES.has(can.id) ? "bottle" : "can"; }
+    function vesselSVG(kind, height) {
+      const h = height || (kind === "bottle" ? 112 : 96);
+      if (kind === "bottle") {
+        return `<svg viewBox="0 0 64 128" width="${Math.round(h * 0.5)}" height="${h}" aria-hidden="true"><rect x="26" y="2" width="12" height="9" rx="1.5" fill="#e6a15c"/><path d="M28 11h8v8h5l5 16v68a12 12 0 0 1-12 12H30a12 12 0 0 1-12-12V35l5-16h5z" fill="#f2efe6" fill-opacity="0.16" stroke="#f2efe6" stroke-opacity="0.55" stroke-width="1.5"/><path d="M20 78h24v22a10 10 0 0 1-10 10h-4a10 10 0 0 1-10-10z" fill="#e6a15c" fill-opacity="0.9"/><rect x="19" y="56" width="26" height="16" rx="2" fill="#0c0d11"/></svg>`;
+      }
+      return `<svg viewBox="0 0 64 100" width="${Math.round(h * 0.64)}" height="${h}" aria-hidden="true"><ellipse cx="32" cy="16" rx="18" ry="6" fill="#9a9aa3"/><path d="M14 16h36v66a8 8 0 0 1-8 8H22a8 8 0 0 1-8-8z" fill="#f2efe6"/><rect x="14" y="38" width="36" height="24" fill="#e6a15c"/><ellipse cx="32" cy="16" rx="10" ry="3" fill="#0c0d11"/><rect x="29" y="10" width="6" height="5" rx="1" fill="#3a2412"/></svg>`;
+    }
+
     function render() {
       document.getElementById("line").textContent =
-        phase === "vend" ? "……がらん、がらん。" :
+        phase === "vend" ? "……落ちてくる。" :
         phase === "jam" ? "つかえた。ゆすって。" :
         phase === "shaking" ? "……カラカラ。" :
         phase === "out" && current ? current.name :
         phase === "kept" ? "ポケットに入れた。" :
-        "ボタンを押すと、缶が落ちます。";
+        "ボタンを押すと、缶かボトルが落ちます。";
       document.getElementById("machine").classList.toggle("shake-body", phase === "shaking");
+      const glass = document.getElementById("glass");
+      if (phase === "vend" && current) {
+        glass.innerHTML = `<div class="sheen"></div><div class="drop"><div class="falling">${vesselSVG(vesselOf(current), 112)}</div></div>`;
+      } else if ((phase === "jam" || phase === "shaking") && current) {
+        glass.innerHTML = `<div class="sheen"></div><div class="drop"><div class="stuck">${vesselSVG(vesselOf(current), 112)}</div></div>`;
+      } else {
+        glass.innerHTML = `<div class="sheen"></div><div class="shelf">${vesselSVG("can", 64)}${vesselSVG("bottle", 80)}${vesselSVG("can", 64)}${vesselSVG("bottle", 80)}</div>`;
+      }
       const slot = document.getElementById("slot");
       const locked = phase === "vend" || phase === "jam" || phase === "shaking";
       document.querySelectorAll(".mood").forEach((btn) => { btn.disabled = locked; });
@@ -235,21 +294,22 @@
       } else if (phase === "out" && current) {
         const held = pocket.includes(current.id);
         const kind = current.mood === "secret" ? "売ってない" : moodName[current.mood];
+        const shape = vesselOf(current) === "bottle" ? "ペットボトル" : "缶";
         slot.innerHTML =
           '<p class="label">取り出し口</p>' +
-          '<article class="can can-in">' +
-          '<p class="kind"></p><h2></h2><p class="blurb"></p><p class="effect"></p>' +
+          '<article class="product can-in">' +
+          vesselSVG(vesselOf(current), 96) +
+          '<div><p class="kind"></p><h2></h2><p class="blurb"></p><p class="effect"></p></div></article>' +
           (held
             ? '<button type="button" class="ghost" id="act">閉じる</button>'
-            : '<button type="button" class="primary" id="act">ポケットへ</button><p class="warn">取らないと、次の缶で戻ってしまう。</p>') +
-          "</article>";
-        slot.querySelector(".kind").textContent = kind;
+            : '<button type="button" class="primary" id="act">ポケットへ</button><p class="warn">取らないと、次の一本で戻ってしまう。</p>');
+        slot.querySelector(".kind").textContent = kind + "　" + shape;
         slot.querySelector("h2").textContent = current.name;
         slot.querySelector(".blurb").textContent = current.line;
         slot.querySelector(".effect").textContent = "副作用　" + current.effect;
         document.getElementById("act").onclick = held ? () => { phase = "idle"; current = null; render(); } : take;
       } else {
-        slot.innerHTML = '<p class="label">取り出し口</p><p class="empty">からっぽ。上のボタンで一缶。</p>';
+        slot.innerHTML = '<p class="label">取り出し口</p><p class="empty">からっぽ。上のボタンで一本。</p>';
       }
       document.getElementById("count").textContent = "ポケット　" + pocket.length;
       const clear = document.getElementById("clear");
@@ -264,10 +324,11 @@
         const li = document.createElement("li");
         const btn = document.createElement("button");
         btn.type = "button";
+        btn.innerHTML = vesselSVG(vesselOf(can), 36);
         const name = document.createElement("b");
         name.textContent = can.name;
         const tag = document.createElement("small");
-        tag.textContent = can.mood === "secret" ? "ひみつ" : "もらった缶";
+        tag.textContent = can.mood === "secret" ? "ひみつ" : vesselOf(can) === "bottle" ? "ペットボトル" : "缶";
         btn.append(name, tag);
         btn.onclick = () => { if (busy) return; current = can; phase = "out"; confirmClear = false; render(); };
         li.append(btn);
@@ -279,18 +340,19 @@
       if (busy) return;
       busy = true;
       confirmClear = false;
+      const jammed = Math.random() < 0.14;
+      current = jammed ? null : pick(mood, pocket);
       phase = "vend";
-      current = null;
       render();
       tone(880, 0.08, "square");
-      await sleep(720);
-      if (Math.random() < 0.14) {
+      await sleep(780);
+      if (jammed) {
+        current = pick(mood, pocket);
         phase = "jam";
         busy = false;
         render();
         return;
       }
-      current = pick(mood, pocket);
       phase = "out";
       tone(180, 0.18, "triangle");
       busy = false;

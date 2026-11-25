@@ -200,28 +200,56 @@
       ["s4","sweet","入れすぎのガムシロップ","友達の家の味。","やさしくなる"],
       ["s5","sweet","溶けたアイスキャンデー","棒の近くが一番甘い。","季節を間違える"],
       ["s6","sweet","出してない手紙","紙の甘い匂い。","下書きが増える"],
+      ["s7","sweet","夜ふかしの練乳","白いのが底に残る。","甘さを後回しにする"],
+      ["s8","sweet","片方だけのイヤホン","甘い片耳。","もう片方を探す"],
+      ["s9","sweet","温めそこねたココア","ぬるいのに、まだ甘い。","やり直したくなる"],
+      ["s10","sweet","自販機の下のアメ","誰かが落とした。","拾う癖がつく"],
+      ["s11","sweet","分けてもらったプリン","スプーンは一本。","半分こしたくなる"],
+      ["s12","sweet","広告のオレンジ","終電の窓に映ってた。","景色を甘く見る"],
       ["b1","bitter","氷だけ親切なブラック","苦い。氷が先に終わる。","正直になる"],
       ["b2","bitter","既読のままの夜","炭酸はない。","文章が短くなる"],
       ["b3","bitter","やや冷たい緑茶","苦みは葉のせい。","肩がおりる"],
       ["b4","bitter","言いかけの本音","後味が長い。","明日の自分が困る"],
       ["b5","bitter","ベンチの缶コーヒー","自動の苦さ。","終電を一本見送る"],
       ["b6","bitter","残量12%の味","急いでいる苦さ。","画面を暗くしたくなる"],
+      ["b7","bitter","薄めたエスプレッソ","濃いふりをしてる。","本音が薄まる"],
+      ["b8","bitter","言い淀んだごめん","キャップが硬い。","あとで送る"],
+      ["b9","bitter","冷めたほうじ茶","香りのほうが残ってる。","席を立つ"],
+      ["b10","bitter","未送信の下書き","苦い文字が沈んでる。","送信を明日にする"],
+      ["b11","bitter","二杯目のブラック","一杯目より正直。","眠れなくなる"],
+      ["b12","bitter","改札の風","味はない。冷たい。","コートの前を閉じる"],
       ["h1","hot","二倍の七味","舌が先に起きている。","言いたいことが先に出る"],
       ["h2","hot","蓋を閉め忘れた夜","辛さと、少しの後悔。","水を探す"],
       ["h3","hot","断れない誘い","赤い。","靴を履いてしまう"],
       ["h4","hot","一口で泣くラー油","泣きは辛さのせい。","目が覚める"],
       ["h5","hot","熱いままのアスファルト","缶なのに地面の味。","歩く速度が上がる"],
       ["h6","hot","甘い顔のラムネ","勝負をしかけてくる。","もう一回押す"],
+      ["h7","hot","置き忘れたタバスコ","赤いまま、待ってる。","何にでもかける"],
+      ["h8","hot","短い着信","三秒で切れた。","かけ直す"],
+      ["h9","hot","辛口の占い","当たりすぎて熱い。","メモを取る"],
+      ["h10","hot","歩きすぎた夜","足の裏が缶になってる。","遠回りをやめる"],
+      ["h11","hot","友達の無茶振り","栓を開けると始まる。","断る前に笑う"],
+      ["h12","hot","赤いままの信号待ち","渡れない熱さ。","足踏みする"],
       ["q1","quiet","消灯後の水","音がしない。","呼吸が深くなる"],
       ["q2","quiet","誰もいない青信号","味より温度。","立ち止まる"],
       ["q3","quiet","ミュートの通知","透明。","画面を裏返す"],
       ["q4","quiet","雨の図書館の出口","静かな湿り気。","傘をゆっくり開く"],
       ["q5","quiet","言わなくてよかった一言","ほぼ無味。","そのままでいい"],
       ["q6","quiet","枕もとの無音","薄い。","目を閉じる"],
+      ["q7","quiet","消した部屋の麦茶","ぬるくて、正しい。","電気をつけない"],
+      ["q8","quiet","通知オフの朝","何も鳴らない炭酸。","スマホを裏返す"],
+      ["q9","quiet","無人のエレベーター","階を選ばない味。","目を閉じたまま乗る"],
+      ["q10","quiet","ページの端の余白","ほとんど水。","何も書かない"],
+      ["q11","quiet","雨音だけの水","ラベルがにじんでる。","傘を開くのが遅れる"],
+      ["q12","quiet","閉館五分前","足音だけが残る。","出口へ歩く"],
       ["x1","secret","つり銭の代わりの星","光ってない。持つと少し光る。","上を向く"],
       ["x2","secret","ラベルのない缶","味は、今日避けたもの。","覚えていないふり"],
       ["x3","secret","営業終了の五分前","機械が親切な時間。","もう一杯、と言う"],
       ["x4","secret","宛名のない手紙","返却口に最初からあった。","自分の名前を書きたくなる"],
+      ["x5","secret","返却口の月","丸くて、まだ冷たい。","空を確認する"],
+      ["x6","secret","名前を呼ばれた炭酸","栓の向こうで、誰か。","振り返る"],
+      ["x7","secret","まだ開いてない一番","押した記憶がない。","もう一度押す"],
+      ["x8","secret","お釣りじゃない切符","行き先が空白。","一駅だけ乗る"],
     ].map(([id, mood, name, line, effect]) => ({ id, mood, name, line, effect }));
     const KEY = "yoru-jihanki-pocket";
     const moodName = Object.fromEntries(MOODS);
@@ -258,7 +286,7 @@
     function sleep(ms) { return new Promise((r) => setTimeout(r, reduce ? 0 : ms)); }
     function save() { localStorage.setItem(KEY, JSON.stringify(pocket)); }
 
-    const BOTTLES = new Set(["s2", "s3", "s4", "s5", "b3", "h1", "h4", "h6", "q1", "q2", "q4", "q5", "x3"]);
+    const BOTTLES = new Set(["s2","s3","s4","s5","s7","s9","s11","b3","b8","b9","h1","h4","h6","h7","h9","h11","q1","q2","q4","q5","q7","q9","q11","x3","x6"]);
     function vesselOf(can) { return BOTTLES.has(can.id) ? "bottle" : "can"; }
     function vesselSVG(kind, height) {
       const h = height || (kind === "bottle" ? 112 : 96);
@@ -302,12 +330,14 @@
           '<div><p class="kind"></p><h2></h2><p class="blurb"></p><p class="effect"></p></div></article>' +
           (held
             ? '<button type="button" class="ghost" id="act">閉じる</button>'
-            : '<button type="button" class="primary" id="act">ポケットへ</button><p class="warn">取らないと、次の一本で戻ってしまう。</p>');
+            : '<button type="button" class="primary" id="act">ポケットへ</button><p class="warn">取らないと、次の一本で戻ってしまう。</p>') +
+          '<button type="button" class="ghost" id="share">結果をシェア</button><p class="warn" id="share-note" hidden></p>';
         slot.querySelector(".kind").textContent = kind + "　" + shape;
         slot.querySelector("h2").textContent = current.name;
         slot.querySelector(".blurb").textContent = current.line;
         slot.querySelector(".effect").textContent = "副作用　" + current.effect;
         document.getElementById("act").onclick = held ? () => { phase = "idle"; current = null; render(); } : take;
+        document.getElementById("share").onclick = () => void shareResult();
       } else {
         slot.innerHTML = '<p class="label">取り出し口</p><p class="empty">からっぽ。上のボタンで一本。</p>';
       }
@@ -370,6 +400,35 @@
       tone(520, 0.14, "triangle");
       busy = false;
       render();
+    }
+    const SHARE_URL = "https://mofu-mitsu.github.io/yoru-jihanki/";
+    async function shareResult() {
+      if (!current) return;
+      const text = [
+        "よるの自販機で「" + current.name + "」が出た。",
+        current.line,
+        "副作用　" + current.effect,
+        "#よるの自販機",
+        SHARE_URL,
+      ].join("\n");
+      const note = document.getElementById("share-note");
+      try {
+        if (navigator.share) {
+          await navigator.share({ title: "よるの自販機", text });
+          if (note) { note.hidden = false; note.textContent = "シェアした。"; }
+          return;
+        }
+        await navigator.clipboard.writeText(text);
+        if (note) { note.hidden = false; note.textContent = "コピーした。#よるの自販機 付き。"; }
+      } catch (err) {
+        if (err && err.name === "AbortError") return;
+        try {
+          await navigator.clipboard.writeText(text);
+          if (note) { note.hidden = false; note.textContent = "コピーした。#よるの自販機 付き。"; }
+        } catch (_) {
+          if (note) { note.hidden = false; note.textContent = "シェアできなかった。"; }
+        }
+      }
     }
     function take() {
       if (!current) return;
